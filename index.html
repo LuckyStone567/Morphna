@@ -3,138 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <title>Morphna</title>
+
 <style>
 body{margin:0;font-family:Arial;background:#f5f5f5}
-header{background:white;padding:15px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:5}
+
+/* 상단 */
+header{background:white;padding:15px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd}
 .logo{font-weight:bold;color:#2e7d32;font-size:22px}
 .search{width:300px;padding:10px;border:1px solid #ddd;border-radius:6px}
+
+/* 카테고리 */
 .nav{display:flex;gap:10px;padding:10px;background:#fff;border-bottom:1px solid #ddd}
 .nav button{border:none;background:#eee;padding:7px 12px;border-radius:20px;cursor:pointer}
+
+/* 리스트 */
 .container{padding:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-
 .card{background:white;border-radius:10px;overflow:hidden;cursor:pointer;border:1px solid #eee}
-.cardImg{
-  width:100%;
-  aspect-ratio:1/1;
-  background-size:cover;
-  background-position:center;
-  background-color:#eee;
-}
+.cardImg{width:100%;aspect-ratio:1/1;background-size:cover;background-position:center;background:#eee}
 .info{padding:10px}
-.price{font-weight:bold;font-size:17px;margin-top:5px}
+.price{font-weight:bold;font-size:17px}
 
-#writeBtn{position:fixed;bottom:20px;right:20px;background:#2e7d32;color:white;border:none;width:58px;height:58px;border-radius:50%;font-size:28px;cursor:pointer;z-index:20}
+/* 글쓰기 버튼 */
+#writeBtn{position:fixed;bottom:20px;right:20px;background:#2e7d32;color:white;border:none;width:60px;height:60px;border-radius:50%;font-size:28px;cursor:pointer}
 
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:30}
+/* 모달 */
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:20}
 .modalContent{background:white;padding:20px;margin:50px auto;width:340px;border-radius:10px}
-.modalContent input,.modalContent select,.modalContent textarea{width:95%;padding:9px}
-textarea{height:90px;resize:none}
+.modalContent input,.modalContent select,.modalContent textarea{width:95%;padding:8px}
 
 /* 상세페이지 */
-.detailPage{
-  display:none;
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:#f5f5f5;
-  z-index:100;
-  overflow-y:auto;
-}
+.detailPage{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#f5f5f5;z-index:100;overflow:auto}
+.detailWrap{max-width:900px;margin:auto;background:white}
+.detailImg{width:100%;aspect-ratio:1/1;background-size:cover;background-position:center}
+.detailInfo{padding:20px}
+.detailTitle{font-size:22px;font-weight:bold}
+.detailPrice{font-size:24px;font-weight:bold;margin:10px 0}
+.detailDesc{white-space:pre-wrap;background:#f7f7f7;padding:10px;border-radius:8px}
 
-.detailHeader{
-  background:white;
-  padding:15px;
-  border-bottom:1px solid #ddd;
-  display:flex;
-  align-items:center;
-  gap:15px;
-  position:sticky;
-  top:0;
-  z-index:101;
-}
-
-.backBtn{
-  background:none;
-  border:none;
-  font-size:22px;
-  cursor:pointer;
-}
-
-.detailWrap{
-  max-width:900px;
-  margin:0 auto;
-  background:white;
-  min-height:100vh;
-}
-
-.detailImg{
-  width:100%;
-  aspect-ratio:1/1;
-  background-size:cover;
-  background-position:center;
-  background-color:#eee;
-}
-
-.detailInfo{
-  padding:20px;
-}
-
-.detailTitle{
-  font-size:23px;
-  font-weight:bold;
-}
-
-.detailPrice{
-  font-size:25px;
-  font-weight:bold;
-  margin:12px 0;
-}
-
-.detailCategory{
-  color:#777;
-  margin-bottom:20px;
-}
-
-.detailDesc{
-  white-space:pre-wrap;
-  line-height:1.6;
-  border-top:1px solid #eee;
-  padding-top:20px;
-}
-
-.similarSection{
-  padding:20px;
-  border-top:8px solid #f5f5f5;
-}
-
-.similarGrid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:15px;
-}
-
-.similarCard{
-  background:#fff;
-  border:1px solid #eee;
-  border-radius:10px;
-  overflow:hidden;
-  cursor:pointer;
-}
-
-.similarImg{
-  width:100%;
-  aspect-ratio:1/1;
-  background-size:cover;
-  background-position:center;
-  background-color:#eee;
-}
-
-.similarInfo{
-  padding:8px;
-  font-size:14px;
-}
+/* 채팅 */
+.chatBtn{width:100%;padding:12px;background:#2e7d32;color:white;border:none;border-radius:8px;margin-top:15px;cursor:pointer}
+.chatBox{display:none;position:fixed;right:20px;bottom:80px;width:300px;height:400px;background:white;border-radius:10px;border:1px solid #ddd;z-index:200}
+.chatHeader{background:#2e7d32;color:white;padding:10px}
+.chatMessages{height:260px;overflow:auto;padding:10px;background:#f5f5f5}
+.chatInput{display:flex}
+.chatInput input{flex:1;padding:10px;border:none}
+.chatInput button{width:70px;background:#2e7d32;color:white;border:none}
 </style>
 </head>
 
@@ -162,13 +75,13 @@ textarea{height:90px;resize:none}
     <h3>상품 등록</h3>
     <input id="title" placeholder="제목"><br><br>
     <input id="price" placeholder="가격"><br><br>
-    <input type="file" id="file" accept="image/png,image/jpeg"><br><br>
+    <input type="file" id="file"><br><br>
     <select id="category">
       <option>도마뱀</option>
       <option>뱀</option>
       <option>용품</option>
     </select><br><br>
-    <textarea id="description" placeholder="상품 설명을 입력하세요"></textarea><br><br>
+    <textarea id="description" placeholder="설명"></textarea><br><br>
     <button onclick="addItem()">등록</button>
     <button onclick="closeWriteModal()">닫기</button>
   </div>
@@ -176,163 +89,104 @@ textarea{height:90px;resize:none}
 
 <!-- 상세페이지 -->
 <div class="detailPage" id="detailPage">
-  <div class="detailHeader">
-    <button class="backBtn" onclick="closeDetailPage()">←</button>
-    <strong>상품 정보</strong>
-  </div>
-
   <div class="detailWrap">
     <div id="detailImage" class="detailImg"></div>
-
     <div class="detailInfo">
       <div id="detailTitle" class="detailTitle"></div>
       <div id="detailPrice" class="detailPrice"></div>
-      <div id="detailCategory" class="detailCategory"></div>
-      <div id="detailDescription" class="detailDesc"></div>
-    </div>
+      <div id="detailDesc" class="detailDesc"></div>
 
-    <div class="similarSection">
-      <h3>비슷한 상품</h3>
-      <div class="similarGrid" id="similarList"></div>
+      <!-- 채팅 버튼 -->
+      <button class="chatBtn" onclick="openChat()">채팅하기</button>
     </div>
   </div>
 </div>
 
+<!-- 채팅창 -->
+<div class="chatBox" id="chatBox">
+  <div class="chatHeader">
+    채팅
+    <button onclick="closeChat()" style="float:right;background:none;border:none;color:white">X</button>
+  </div>
+  <div class="chatMessages" id="chatMessages"></div>
+  <div class="chatInput">
+    <input id="chatText">
+    <button onclick="sendChat()">전송</button>
+  </div>
+</div>
+
 <script>
-const API = "https://morphna-server.onrender.com";
-let items = [];
+const API="https://morphna-server.onrender.com";
+let items=[];
 
 async function loadItems(){
-  const res = await fetch(API + "/items");
-  items = await res.json();
+  const res=await fetch(API+"/items");
+  items=await res.json();
   render(items);
 }
 
 function render(data){
-  list.innerHTML = "";
-
+  list.innerHTML="";
   data.forEach(i=>{
-    const card = document.createElement("div");
-    card.className = "card";
+    const card=document.createElement("div");
+    card.className="card";
 
-    card.innerHTML = `
-      <div class="cardImg" style="background-image:url('${i.img || "https://via.placeholder.com/600"}')"></div>
+    card.innerHTML=`
+      <div class="cardImg" style="background-image:url('${i.img}')"></div>
       <div class="info">
         <div>${i.title}</div>
-        <div class="price">${Number(i.price).toLocaleString()}원</div>
-        <small>${i.category}</small>
+        <div class="price">${i.price}원</div>
       </div>
     `;
 
-    card.onclick = () => openDetailPage(i);
+    card.onclick=()=>openDetail(i);
     list.appendChild(card);
   });
 }
 
-function openWriteModal(){
-  writeModal.style.display = "block";
+function openDetail(i){
+  detailImage.style.backgroundImage=`url('${i.img}')`;
+  detailTitle.innerText=i.title;
+  detailPrice.innerText=i.price+"원";
+  detailDesc.innerText=i.description||"설명 없음";
+  detailPage.style.display="block";
 }
 
-function closeWriteModal(){
-  writeModal.style.display = "none";
-}
-
-function openDetailPage(item){
-  detailImage.style.backgroundImage = `url('${item.img || "https://via.placeholder.com/600"}')`;
-  detailTitle.innerText = item.title;
-  detailPrice.innerText = Number(item.price).toLocaleString() + "원";
-  detailCategory.innerText = "카테고리: " + item.category;
-  detailDescription.innerText = item.description || "등록된 설명이 없습니다.";
-
-  renderSimilarItems(item);
-  detailPage.style.display = "block";
-}
-
-function closeDetailPage(){
-  detailPage.style.display = "none";
-}
-
-function renderSimilarItems(currentItem){
-  similarList.innerHTML = "";
-
-  const similar = items
-    .filter(i => i._id !== currentItem._id && i.category === currentItem.category)
-    .slice(0, 6);
-
-  if(similar.length === 0){
-    similarList.innerHTML = "<p>비슷한 상품이 아직 없습니다.</p>";
-    return;
-  }
-
-  similar.forEach(i=>{
-    const card = document.createElement("div");
-    card.className = "similarCard";
-
-    card.innerHTML = `
-      <div class="similarImg" style="background-image:url('${i.img || "https://via.placeholder.com/600"}')"></div>
-      <div class="similarInfo">
-        <div>${i.title}</div>
-        <strong>${Number(i.price).toLocaleString()}원</strong>
-      </div>
-    `;
-
-    card.onclick = () => openDetailPage(i);
-    similarList.appendChild(card);
-  });
-}
+function openWriteModal(){writeModal.style.display="block";}
+function closeWriteModal(){writeModal.style.display="none";}
 
 async function addItem(){
-  const selectedFile = file.files[0];
+  const fileData=file.files[0];
+  const reader=new FileReader();
 
-  if(!title.value || !price.value){
-    alert("제목과 가격을 입력해줘");
-    return;
-  }
+  reader.onload=async e=>{
+    await fetch(API+"/items",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        title:title.value,
+        price:price.value,
+        img:e.target.result,
+        category:category.value,
+        description:description.value
+      })
+    });
+    loadItems();
+    writeModal.style.display="none";
+  };
 
-  if(selectedFile){
-    const reader = new FileReader();
-
-    reader.onload = async function(e){
-      await uploadItem(e.target.result);
-    };
-
-    reader.readAsDataURL(selectedFile);
-  } else {
-    await uploadItem("");
-  }
+  reader.readAsDataURL(fileData);
 }
 
-async function uploadItem(imageData){
-  await fetch(API + "/items", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({
-      title: title.value,
-      price: price.value,
-      img: imageData,
-      category: category.value,
-      description: description.value
-    })
-  });
-
-  title.value = "";
-  price.value = "";
-  file.value = "";
-  description.value = "";
-  writeModal.style.display = "none";
-
-  loadItems();
+/* 채팅 */
+function openChat(){chatBox.style.display="block";}
+function closeChat(){chatBox.style.display="none";}
+function sendChat(){
+  const msg=document.createElement("div");
+  msg.innerText=chatText.value;
+  chatMessages.appendChild(msg);
+  chatText.value="";
 }
-
-function filterItems(cat){
-  if(cat === "전체") render(items);
-  else render(items.filter(i => i.category === cat));
-}
-
-search.oninput = () => {
-  const keyword = search.value.toLowerCase();
-  render(items.filter(i => i.title.toLowerCase().includes(keyword)));
-};
 
 loadItems();
 </script>
