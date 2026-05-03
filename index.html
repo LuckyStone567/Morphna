@@ -3,84 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <title>Morphna</title>
-
 <style>
 body{margin:0;font-family:Arial;background:#f5f5f5}
-header{
-  background:white;
-  padding:15px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border-bottom:1px solid #ddd;
-}
+header{background:white;padding:15px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd}
 .logo{font-weight:bold;color:#2e7d32;font-size:20px}
 .search{width:300px;padding:8px}
-
-.nav{
-  display:flex;
-  gap:10px;
-  padding:10px;
-  background:#fff;
-  border-bottom:1px solid #ddd;
-}
-.nav button{
-  border:none;
-  background:#eee;
-  padding:6px 10px;
-  border-radius:5px;
-  cursor:pointer;
-}
-
-.container{
-  padding:20px;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:20px;
-}
-
-.card{
-  background:white;
-  border-radius:10px;
-  overflow:hidden;
-  cursor:pointer;
-}
-.img{
-  height:150px;
-  background-size:cover;
-  background-position:center;
-}
+.nav{display:flex;gap:10px;padding:10px;background:#fff;border-bottom:1px solid #ddd}
+.nav button{border:none;background:#eee;padding:6px 10px;border-radius:5px;cursor:pointer}
+.container{padding:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.card{background:white;border-radius:10px;overflow:hidden;cursor:pointer}
+.img{height:150px;background-size:cover;background-position:center}
 .info{padding:10px}
 .price{font-weight:bold}
-
-#writeBtn{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  background:#2e7d32;
-  color:white;
-  border:none;
-  padding:15px;
-  border-radius:50%;
-  font-size:20px;
-  cursor:pointer;
-}
-
-/* 모달 */
-.modal{
-  display:none;
-  position:fixed;
-  top:0;left:0;
-  width:100%;height:100%;
-  background:rgba(0,0,0,0.5);
-}
-.modalContent{
-  background:white;
-  padding:20px;
-  margin:100px auto;
-  width:300px;
-  border-radius:10px;
-}
+#writeBtn{position:fixed;bottom:20px;right:20px;background:#2e7d32;color:white;border:none;padding:15px;border-radius:50%;font-size:20px;cursor:pointer}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5)}
+.modalContent{background:white;padding:20px;margin:80px auto;width:320px;border-radius:10px}
+.modalContent input,.modalContent select{width:95%;padding:8px}
 </style>
 </head>
 
@@ -92,90 +30,123 @@ header{
 </header>
 
 <div class="nav">
-  <button onclick="filter('전체')">전체</button>
-  <button onclick="filter('도마뱀')">도마뱀</button>
-  <button onclick="filter('뱀')">뱀</button>
-  <button onclick="filter('용품')">용품</button>
+  <button onclick="filterItems('전체')">전체</button>
+  <button onclick="filterItems('도마뱀')">도마뱀</button>
+  <button onclick="filterItems('뱀')">뱀</button>
+  <button onclick="filterItems('용품')">용품</button>
 </div>
 
 <div class="container" id="list"></div>
 
 <button id="writeBtn" onclick="openModal()">+</button>
 
-<!-- 글쓰기 -->
 <div class="modal" id="modal">
   <div class="modalContent">
     <h3>상품 등록</h3>
     <input id="title" placeholder="제목"><br><br>
     <input id="price" placeholder="가격"><br><br>
-    <input id="img" placeholder="이미지 URL"><br><br>
+    <input type="file" id="file" accept="image/png,image/jpeg"><br><br>
     <select id="category">
       <option>도마뱀</option>
       <option>뱀</option>
       <option>용품</option>
     </select><br><br>
-    <button onclick="add()">등록</button>
+    <button onclick="addItem()">등록</button>
+    <button onclick="closeModal()">닫기</button>
   </div>
 </div>
 
 <script>
-let items = [
-  {
-    title:"크레스티드 게코",
-    price:80000,
-    img:"https://upload.wikimedia.org/wikipedia/commons/1/1e/Correlophus_ciliatus.jpg",
-    category:"도마뱀"
-  }
-];
+const API = "https://morphna-server.onrender.com";
+let items = [];
+
+async function loadItems(){
+  const res = await fetch(API + "/items");
+  items = await res.json();
+  render(items);
+}
 
 function render(data){
-  const list = document.getElementById("list");
   list.innerHTML = "";
 
-  data.forEach((i,index)=>{
+  data.forEach(i=>{
     const card = document.createElement("div");
-    card.className="card";
+    card.className = "card";
 
     card.innerHTML = `
-      <div class="img" style="background-image:url('${i.img}')"></div>
+      <div class="img" style="background-image:url('${i.img || "https://via.placeholder.com/300"}')"></div>
       <div class="info">
         <div>${i.title}</div>
         <div class="price">${i.price}원</div>
+        <small>${i.category}</small>
       </div>
     `;
 
-    card.onclick=()=>alert(i.title);
+    card.onclick = () => alert(i.title + "\\n" + i.price + "원");
     list.appendChild(card);
   });
 }
 
-function add(){
-  items.unshift({
-    title:title.value,
-    price:price.value,
-    img:img.value || "https://via.placeholder.com/150",
-    category:category.value
+function openModal(){
+  modal.style.display = "block";
+}
+
+function closeModal(){
+  modal.style.display = "none";
+}
+
+async function addItem(){
+  const selectedFile = file.files[0];
+
+  if(!title.value || !price.value){
+    alert("제목과 가격을 입력해줘");
+    return;
+  }
+
+  if(selectedFile){
+    const reader = new FileReader();
+
+    reader.onload = async function(e){
+      await uploadItem(e.target.result);
+    };
+
+    reader.readAsDataURL(selectedFile);
+  } else {
+    await uploadItem("");
+  }
+}
+
+async function uploadItem(imageData){
+  await fetch(API + "/items", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      title: title.value,
+      price: price.value,
+      img: imageData,
+      category: category.value
+    })
   });
 
-  modal.style.display="none";
-  render(items);
+  title.value = "";
+  price.value = "";
+  file.value = "";
+  modal.style.display = "none";
+
+  loadItems();
 }
 
-function openModal(){
-  modal.style.display="block";
+function filterItems(cat){
+  if(cat === "전체") render(items);
+  else render(items.filter(i => i.category === cat));
 }
 
-function filter(cat){
-  if(cat==="전체") render(items);
-  else render(items.filter(i=>i.category===cat));
-}
-
-search.oninput = ()=>{
-  const val = search.value.toLowerCase();
-  render(items.filter(i=>i.title.toLowerCase().includes(val)));
+search.oninput = () => {
+  const keyword = search.value.toLowerCase();
+  render(items.filter(i => i.title.toLowerCase().includes(keyword)));
 };
 
-render(items);
+loadItems();
 </script>
 
 </body>
