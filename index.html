@@ -5,24 +5,136 @@
 <title>Morphna</title>
 <style>
 body{margin:0;font-family:Arial;background:#f5f5f5}
-header{background:white;padding:15px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd}
-.logo{font-weight:bold;color:#2e7d32;font-size:20px}
-.search{width:300px;padding:8px}
+header{background:white;padding:15px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:5}
+.logo{font-weight:bold;color:#2e7d32;font-size:22px}
+.search{width:300px;padding:10px;border:1px solid #ddd;border-radius:6px}
 .nav{display:flex;gap:10px;padding:10px;background:#fff;border-bottom:1px solid #ddd}
-.nav button{border:none;background:#eee;padding:6px 10px;border-radius:5px;cursor:pointer}
+.nav button{border:none;background:#eee;padding:7px 12px;border-radius:20px;cursor:pointer}
 .container{padding:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-.card{background:white;border-radius:10px;overflow:hidden;cursor:pointer}
-.img{height:150px;background-size:cover;background-position:center}
+
+.card{background:white;border-radius:10px;overflow:hidden;cursor:pointer;border:1px solid #eee}
+.cardImg{
+  width:100%;
+  aspect-ratio:1/1;
+  background-size:cover;
+  background-position:center;
+  background-color:#eee;
+}
 .info{padding:10px}
-.price{font-weight:bold}
-#writeBtn{position:fixed;bottom:20px;right:20px;background:#2e7d32;color:white;border:none;padding:15px;border-radius:50%;font-size:20px;cursor:pointer}
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10}
+.price{font-weight:bold;font-size:17px;margin-top:5px}
+
+#writeBtn{position:fixed;bottom:20px;right:20px;background:#2e7d32;color:white;border:none;width:58px;height:58px;border-radius:50%;font-size:28px;cursor:pointer;z-index:20}
+
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:30}
 .modalContent{background:white;padding:20px;margin:50px auto;width:340px;border-radius:10px}
-.modalContent input,.modalContent select,.modalContent textarea{width:95%;padding:8px}
+.modalContent input,.modalContent select,.modalContent textarea{width:95%;padding:9px}
 textarea{height:90px;resize:none}
-.detailImg{width:100%;height:260px;background-size:cover;background-position:center;border-radius:10px}
-.detailPrice{font-size:20px;font-weight:bold;margin-top:10px}
-.detailDesc{white-space:pre-wrap;background:#f7f7f7;padding:10px;border-radius:8px}
+
+/* 상세페이지 */
+.detailPage{
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:#f5f5f5;
+  z-index:100;
+  overflow-y:auto;
+}
+
+.detailHeader{
+  background:white;
+  padding:15px;
+  border-bottom:1px solid #ddd;
+  display:flex;
+  align-items:center;
+  gap:15px;
+  position:sticky;
+  top:0;
+  z-index:101;
+}
+
+.backBtn{
+  background:none;
+  border:none;
+  font-size:22px;
+  cursor:pointer;
+}
+
+.detailWrap{
+  max-width:900px;
+  margin:0 auto;
+  background:white;
+  min-height:100vh;
+}
+
+.detailImg{
+  width:100%;
+  aspect-ratio:1/1;
+  background-size:cover;
+  background-position:center;
+  background-color:#eee;
+}
+
+.detailInfo{
+  padding:20px;
+}
+
+.detailTitle{
+  font-size:23px;
+  font-weight:bold;
+}
+
+.detailPrice{
+  font-size:25px;
+  font-weight:bold;
+  margin:12px 0;
+}
+
+.detailCategory{
+  color:#777;
+  margin-bottom:20px;
+}
+
+.detailDesc{
+  white-space:pre-wrap;
+  line-height:1.6;
+  border-top:1px solid #eee;
+  padding-top:20px;
+}
+
+.similarSection{
+  padding:20px;
+  border-top:8px solid #f5f5f5;
+}
+
+.similarGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
+}
+
+.similarCard{
+  background:#fff;
+  border:1px solid #eee;
+  border-radius:10px;
+  overflow:hidden;
+  cursor:pointer;
+}
+
+.similarImg{
+  width:100%;
+  aspect-ratio:1/1;
+  background-size:cover;
+  background-position:center;
+  background-color:#eee;
+}
+
+.similarInfo{
+  padding:8px;
+  font-size:14px;
+}
 </style>
 </head>
 
@@ -44,6 +156,7 @@ textarea{height:90px;resize:none}
 
 <button id="writeBtn" onclick="openWriteModal()">+</button>
 
+<!-- 글쓰기 -->
 <div class="modal" id="writeModal">
   <div class="modalContent">
     <h3>상품 등록</h3>
@@ -61,14 +174,27 @@ textarea{height:90px;resize:none}
   </div>
 </div>
 
-<div class="modal" id="detailModal">
-  <div class="modalContent">
+<!-- 상세페이지 -->
+<div class="detailPage" id="detailPage">
+  <div class="detailHeader">
+    <button class="backBtn" onclick="closeDetailPage()">←</button>
+    <strong>상품 정보</strong>
+  </div>
+
+  <div class="detailWrap">
     <div id="detailImage" class="detailImg"></div>
-    <h3 id="detailTitle"></h3>
-    <div id="detailPrice" class="detailPrice"></div>
-    <p id="detailCategory"></p>
-    <div id="detailDescription" class="detailDesc"></div><br>
-    <button onclick="closeDetailModal()">닫기</button>
+
+    <div class="detailInfo">
+      <div id="detailTitle" class="detailTitle"></div>
+      <div id="detailPrice" class="detailPrice"></div>
+      <div id="detailCategory" class="detailCategory"></div>
+      <div id="detailDescription" class="detailDesc"></div>
+    </div>
+
+    <div class="similarSection">
+      <h3>비슷한 상품</h3>
+      <div class="similarGrid" id="similarList"></div>
+    </div>
   </div>
 </div>
 
@@ -90,15 +216,15 @@ function render(data){
     card.className = "card";
 
     card.innerHTML = `
-      <div class="img" style="background-image:url('${i.img || "https://via.placeholder.com/300"}')"></div>
+      <div class="cardImg" style="background-image:url('${i.img || "https://via.placeholder.com/600"}')"></div>
       <div class="info">
         <div>${i.title}</div>
-        <div class="price">${i.price}원</div>
+        <div class="price">${Number(i.price).toLocaleString()}원</div>
         <small>${i.category}</small>
       </div>
     `;
 
-    card.onclick = () => openDetailModal(i);
+    card.onclick = () => openDetailPage(i);
     list.appendChild(card);
   });
 }
@@ -111,17 +237,48 @@ function closeWriteModal(){
   writeModal.style.display = "none";
 }
 
-function openDetailModal(item){
-  detailImage.style.backgroundImage = `url('${item.img || "https://via.placeholder.com/300"}')`;
+function openDetailPage(item){
+  detailImage.style.backgroundImage = `url('${item.img || "https://via.placeholder.com/600"}')`;
   detailTitle.innerText = item.title;
-  detailPrice.innerText = item.price + "원";
+  detailPrice.innerText = Number(item.price).toLocaleString() + "원";
   detailCategory.innerText = "카테고리: " + item.category;
   detailDescription.innerText = item.description || "등록된 설명이 없습니다.";
-  detailModal.style.display = "block";
+
+  renderSimilarItems(item);
+  detailPage.style.display = "block";
 }
 
-function closeDetailModal(){
-  detailModal.style.display = "none";
+function closeDetailPage(){
+  detailPage.style.display = "none";
+}
+
+function renderSimilarItems(currentItem){
+  similarList.innerHTML = "";
+
+  const similar = items
+    .filter(i => i._id !== currentItem._id && i.category === currentItem.category)
+    .slice(0, 6);
+
+  if(similar.length === 0){
+    similarList.innerHTML = "<p>비슷한 상품이 아직 없습니다.</p>";
+    return;
+  }
+
+  similar.forEach(i=>{
+    const card = document.createElement("div");
+    card.className = "similarCard";
+
+    card.innerHTML = `
+      <div class="similarImg" style="background-image:url('${i.img || "https://via.placeholder.com/600"}')"></div>
+      <div class="similarInfo">
+        <div>${i.title}</div>
+        <strong>${Number(i.price).toLocaleString()}원</strong>
+      </div>
+    `;
+
+    card.onclick = () => openDetailPage(i);
+    similarList.appendChild(card);
+  });
 }
 
 async function addItem(){
