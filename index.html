@@ -15,6 +15,7 @@ header{background:white;padding:15px;display:flex;justify-content:space-between;
 .img{height:150px;background-size:cover;background-position:center}
 .info{padding:10px}
 .price{font-weight:bold}
+.deleteBtn{margin-top:10px;background:#ff4d4f;color:white;border:none;padding:6px 10px;border-radius:5px;cursor:pointer}
 #writeBtn{position:fixed;bottom:20px;right:20px;background:#2e7d32;color:white;border:none;padding:15px;border-radius:50%;font-size:20px;cursor:pointer}
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5)}
 .modalContent{background:white;padding:20px;margin:80px auto;width:320px;border-radius:10px}
@@ -78,7 +79,8 @@ function render(data){
       <div class="info">
         <div>${i.title}</div>
         <div class="price">${i.price}원</div>
-        <small>${i.category}</small>
+        <small>${i.category}</small><br>
+        <button class="deleteBtn" onclick="deleteItem(event, '${i._id}')">삭제</button>
       </div>
     `;
 
@@ -132,6 +134,18 @@ async function uploadItem(imageData){
   price.value = "";
   file.value = "";
   modal.style.display = "none";
+
+  loadItems();
+}
+
+async function deleteItem(event, id){
+  event.stopPropagation();
+
+  if(!confirm("정말 삭제할까요?")) return;
+
+  await fetch(API + "/items/" + id, {
+    method: "DELETE"
+  });
 
   loadItems();
 }
