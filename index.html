@@ -15,11 +15,14 @@ header{background:white;padding:15px;display:flex;justify-content:space-between;
 .img{height:150px;background-size:cover;background-position:center}
 .info{padding:10px}
 .price{font-weight:bold}
-.deleteBtn{margin-top:10px;background:#ff4d4f;color:white;border:none;padding:6px 10px;border-radius:5px;cursor:pointer}
 #writeBtn{position:fixed;bottom:20px;right:20px;background:#2e7d32;color:white;border:none;padding:15px;border-radius:50%;font-size:20px;cursor:pointer}
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5)}
-.modalContent{background:white;padding:20px;margin:80px auto;width:320px;border-radius:10px}
-.modalContent input,.modalContent select{width:95%;padding:8px}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10}
+.modalContent{background:white;padding:20px;margin:50px auto;width:340px;border-radius:10px}
+.modalContent input,.modalContent select,.modalContent textarea{width:95%;padding:8px}
+textarea{height:90px;resize:none}
+.detailImg{width:100%;height:260px;background-size:cover;background-position:center;border-radius:10px}
+.detailPrice{font-size:20px;font-weight:bold;margin-top:10px}
+.detailDesc{white-space:pre-wrap;background:#f7f7f7;padding:10px;border-radius:8px}
 </style>
 </head>
 
@@ -39,9 +42,9 @@ header{background:white;padding:15px;display:flex;justify-content:space-between;
 
 <div class="container" id="list"></div>
 
-<button id="writeBtn" onclick="openModal()">+</button>
+<button id="writeBtn" onclick="openWriteModal()">+</button>
 
-<div class="modal" id="modal">
+<div class="modal" id="writeModal">
   <div class="modalContent">
     <h3>상품 등록</h3>
     <input id="title" placeholder="제목"><br><br>
@@ -52,8 +55,20 @@ header{background:white;padding:15px;display:flex;justify-content:space-between;
       <option>뱀</option>
       <option>용품</option>
     </select><br><br>
+    <textarea id="description" placeholder="상품 설명을 입력하세요"></textarea><br><br>
     <button onclick="addItem()">등록</button>
-    <button onclick="closeModal()">닫기</button>
+    <button onclick="closeWriteModal()">닫기</button>
+  </div>
+</div>
+
+<div class="modal" id="detailModal">
+  <div class="modalContent">
+    <div id="detailImage" class="detailImg"></div>
+    <h3 id="detailTitle"></h3>
+    <div id="detailPrice" class="detailPrice"></div>
+    <p id="detailCategory"></p>
+    <div id="detailDescription" class="detailDesc"></div><br>
+    <button onclick="closeDetailModal()">닫기</button>
   </div>
 </div>
 
@@ -79,22 +94,34 @@ function render(data){
       <div class="info">
         <div>${i.title}</div>
         <div class="price">${i.price}원</div>
-        <small>${i.category}</small><br>
-        <button class="deleteBtn" onclick="deleteItem(event, '${i._id}')">삭제</button>
+        <small>${i.category}</small>
       </div>
     `;
 
-    card.onclick = () => alert(i.title + "\\n" + i.price + "원");
+    card.onclick = () => openDetailModal(i);
     list.appendChild(card);
   });
 }
 
-function openModal(){
-  modal.style.display = "block";
+function openWriteModal(){
+  writeModal.style.display = "block";
 }
 
-function closeModal(){
-  modal.style.display = "none";
+function closeWriteModal(){
+  writeModal.style.display = "none";
+}
+
+function openDetailModal(item){
+  detailImage.style.backgroundImage = `url('${item.img || "https://via.placeholder.com/300"}')`;
+  detailTitle.innerText = item.title;
+  detailPrice.innerText = item.price + "원";
+  detailCategory.innerText = "카테고리: " + item.category;
+  detailDescription.innerText = item.description || "등록된 설명이 없습니다.";
+  detailModal.style.display = "block";
+}
+
+function closeDetailModal(){
+  detailModal.style.display = "none";
 }
 
 async function addItem(){
@@ -126,26 +153,16 @@ async function uploadItem(imageData){
       title: title.value,
       price: price.value,
       img: imageData,
-      category: category.value
+      category: category.value,
+      description: description.value
     })
   });
 
   title.value = "";
   price.value = "";
   file.value = "";
-  modal.style.display = "none";
-
-  loadItems();
-}
-
-async function deleteItem(event, id){
-  event.stopPropagation();
-
-  if(!confirm("정말 삭제할까요?")) return;
-
-  await fetch(API + "/items/" + id, {
-    method: "DELETE"
-  });
+  description.value = "";
+  writeModal.style.display = "none";
 
   loadItems();
 }
